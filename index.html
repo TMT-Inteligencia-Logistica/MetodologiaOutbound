@@ -331,14 +331,12 @@ body.na-capa .top,body.na-capa .tabbar,body.na-capa .foot{display:none}
 .capa-acoes .btn-cta{margin-top:0;font-size:15px;padding:13px 26px;border:0;cursor:pointer;font-family:inherit}
 .capa-rodape{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 20px;padding-block:0 26px;font-size:12px;color:var(--ink-3)}
 .capa-arte svg{width:100%;height:auto;display:block}
-.capa-arte .l{fill:none;stroke:rgba(46,139,239,.55);stroke-width:1.6}
-.capa-arte .l2{fill:none;stroke:rgba(255,255,255,.75);stroke-width:2}
-.capa-arte .g{stroke:rgba(255,255,255,.05);stroke-width:1}
-.capa-arte .p{fill:#2E8BEF;stroke:#0B0C0F;stroke-width:3}
-.capa-arte .h{fill:#F4F5F6;stroke:#0B0C0F;stroke-width:3}
-.capa-arte .anel{fill:none;stroke:rgba(244,245,246,.35);stroke-width:1.5;stroke-dasharray:3 6}
-.capa-arte .ciclo{fill:none;stroke:#F4F5F6;stroke-width:2.5;stroke-linecap:round}
-.capa-arte text{font-family:var(--font);font-size:12px;fill:var(--ink-2);letter-spacing:.08em}
+.capa-arte .br{fill:rgba(46,139,239,.10);stroke:rgba(127,192,255,.75);stroke-width:1.6;stroke-linejoin:round}
+.capa-arte .rt{fill:none;stroke:rgba(255,255,255,.55);stroke-width:1.4}
+.capa-arte .p{fill:#2E8BEF;stroke:#0B0C0F;stroke-width:2}
+.capa-arte .h{fill:#fff;stroke:#0B0C0F;stroke-width:2.5}
+.capa-arte text{font-family:var(--font);font-size:12px;fill:var(--ink-2)}
+.capa-arte text.hb{fill:#fff;font-weight:700}
 /* ---------- ponto de atenção ---------- */
 .aviso{grid-column:1/-1;display:flex;gap:14px;align-items:flex-start;border:1px solid rgba(232,176,74,.4);border-left:4px solid var(--st-warn);background:rgba(232,176,74,.07);border-radius:10px;padding:14px 18px}
 .aviso .ico{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--st-warn);color:#15181E;font-weight:700;font-size:15px}
@@ -680,16 +678,18 @@ const PAGINAS = {
 function pgCapa(pg) {
     const marca = LOGO ? `<img src="${esc(LOGO)}" alt="${esc(CLI)}" style="max-height:52px;max-width:180px;object-fit:contain">`
         : CLI !== 'Cliente' ? `<span class="marca-nome" style="font-size:20px">${esc(CLI)}</span>` : '<span class="marca-vazia">Sua marca aqui</span>';
-    const pts = [[70, 330], [150, 200], [250, 280], [320, 120], [420, 230], [470, 360], [230, 400], [370, 330], [120, 420], [460, 90]];
-    const arcos = [[0, 1], [1, 2], [2, 4], [1, 3], [3, 4], [4, 5], [2, 6], [6, 7], [7, 5], [0, 8], [8, 6], [3, 9], [4, 9], [2, 7]];
-    const q = ([x1, y1], [x2, y2]) => `M${x1} ${y1}Q${(x1 + x2) / 2 + (y2 - y1) * .18} ${(y1 + y2) / 2 - (x2 - x1) * .18} ${x2} ${y2}`;
-    let grade = ''; for (let x = 20; x <= 520; x += 40) grade += `<path class="g" d="M${x} 20V480"/>`; for (let y = 20; y <= 480; y += 40) grade += `<path class="g" d="M20 ${y}H520"/>`;
-    const arte = `<svg viewBox="0 0 540 500" aria-hidden="true">${grade}
-        ${arcos.map(([a, b], i) => `<path class="${i === 2 || i === 4 ? 'l2' : 'l'}" d="${q(pts[a], pts[b])}"/>`).join('')}
-        <circle class="anel" cx="250" cy="280" r="58"/><path class="ciclo" d="M250 222a58 58 0 1 1-50.2 29" marker-end="url(#cap)"/>
-        <defs><marker id="cap" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#F4F5F6"/></marker></defs>
-        ${pts.map(([x, y], i) => `<circle class="${i === 2 || i === 4 ? 'h' : 'p'}" cx="${x}" cy="${y}" r="${i === 2 || i === 4 ? 9 : 6}"/>`).join('')}
-        <text x="250" y="362" text-anchor="middle">BASE</text><text x="440" y="250">CLIENTE</text></svg>`;
+    // contorno simplificado do Brasil (lon, lat), projeção equirretangular
+    const BR = [[-51.6,4.4],[-50,1.8],[-50,0],[-48.5,-1],[-47,-.6],[-44.5,-2.4],[-41.8,-2.9],[-38.5,-3.7],[-37,-4.8],[-35.2,-5.4],[-34.8,-7.1],[-35,-9],[-36.5,-10.5],[-37.5,-11.5],[-38.5,-13],[-39,-15],[-39.2,-17.7],[-40,-19.8],[-41,-21.6],[-42,-23],[-43.2,-23],[-44.7,-23.4],[-46.3,-24],[-48,-25.3],[-48.6,-26.5],[-48.6,-28.5],[-49.7,-29.3],[-50.8,-31],[-52.1,-32.2],[-53.4,-33.7],[-53.5,-32.5],[-55,-31.3],[-56,-30.1],[-57.6,-30.2],[-56,-28.5],[-55,-27.5],[-53.8,-27.1],[-53.7,-26.2],[-54.6,-25.6],[-54.3,-24],[-55.4,-23.9],[-55.7,-22.6],[-57.8,-22.1],[-57.9,-20],[-58.2,-17.5],[-58.4,-16.3],[-60.2,-16.2],[-60.4,-13.7],[-61.9,-13.5],[-63,-12.5],[-65,-11.9],[-65.3,-10.8],[-66.6,-9.9],[-68,-10.7],[-69.6,-11],[-70.6,-9.5],[-72.5,-9.4],[-73.2,-9.4],[-74,-7.5],[-72.9,-5.1],[-70.6,-4.2],[-69.9,-4.2],[-69.4,-1.2],[-69.8,1],[-67.1,1.2],[-66,.8],[-64.2,1.5],[-64,3.7],[-62.8,4],[-61,4.5],[-60.7,5.2],[-60,5],[-59.7,4],[-59.6,2],[-58.8,1.2],[-57,2],[-56,2],[-54.6,2.3],[-52.9,2.2]];
+    const P = ([lo, la]) => [+(20 + (lo + 74) * 12.2).toFixed(1), +(16 + (5.3 - la) * 12.2).toFixed(1)];
+    const CID = {sp: [-46.6, -23.5, 'São Paulo'], rj: [-43.2, -22.9], bh: [-43.9, -19.9], cwb: [-49.3, -25.4], poa: [-51.2, -30], fln: [-48.5, -27.6], bsb: [-47.9, -15.8, 'Brasília'], gyn: [-49.3, -16.7], cgr: [-54.6, -20.4], cba: [-56.1, -15.6], ssa: [-38.5, -13], rec: [-34.9, -8.1, 'Recife'], for: [-38.5, -3.7], bel: [-48.5, -1.4], mao: [-60, -3.1, 'Manaus'], rp: [-47.8, -21.2]};
+    const BASES = ['sp', 'rec'], ROTAS = [['sp', 'rj'], ['sp', 'bh'], ['sp', 'cwb'], ['sp', 'poa'], ['sp', 'bsb'], ['sp', 'cgr'], ['sp', 'rp'], ['sp', 'gyn'], ['sp', 'cba'], ['sp', 'mao'], ['rec', 'for'], ['rec', 'ssa'], ['rec', 'bel'], ['bsb', 'bel']];
+    const arco = (a, b) => { const [x1, y1] = P(CID[a]), [x2, y2] = P(CID[b]); return `M${x1} ${y1}Q${(x1 + x2) / 2 + (y2 - y1) * .15} ${(y1 + y2) / 2 - (x2 - x1) * .15} ${x2} ${y2}`; };
+    const arte = `<svg viewBox="0 0 520 500" aria-hidden="true">
+        <path class="br" d="M${BR.map(P).join('L')}Z"/>
+        ${ROTAS.map(([a, b]) => `<path class="rt" d="${arco(a, b)}"/>`).join('')}
+        ${Object.entries(CID).map(([k, c]) => { const [x, y] = P(c), h = BASES.includes(k);
+            const esq = k === 'sp' || k === 'rec';
+            return `<circle class="${h ? 'h' : 'p'}" cx="${x}" cy="${y}" r="${h ? 7 : 4.5}"/>` + (c[2] ? `<text class="${h ? 'hb' : ''}" x="${x + (esq ? -12 : 10)}" y="${y + (k === 'sp' ? 18 : 4)}" text-anchor="${esq ? 'end' : 'start'}">${c[2]}</text>` : ''); }).join('')}</svg>`;
     pg.innerHTML = `<section class="capa"><div class="wrap capa-top"><img class="tmt" src="logo tmt.png" alt="TMT Inteligência Logística">${marca}</div>
         <div class="wrap capa-corpo"><div>
             <div class="eyebrow">TMT Inteligência Logística · Central de Inteligência</div>
